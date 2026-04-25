@@ -1,0 +1,61 @@
+name: 'Custom AWS Login'
+description: 'A custom GitHub Action to perform an AWS login.'
+
+inputs:
+  account_id:
+    description: 'AWS account ID for the login'
+  role_secret:
+    description: 'AWS IAM Role secret for the login'
+  ecr_login:
+    description: 'Whether to perform ECR login (true/false)'
+    default: 'false'
+
+outputs:
+  tfvars:
+    description: 'TF var name for the target environment (exported from the action)'
+    value: ${{ steps.aws_env.outputs.tfvars }}
+  artifact_bucket:
+    description: 'Artifact bucket name for the target environment (exported from the action)'
+    value: ${{ steps.aws_env.outputs.artifact_bucket }}
+  ecr_registry:
+    description: 'ECR registry URL (exported from the action)'
+    value: ${{ steps.login_ecr.outputs.registry }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate environment variables
+      shell: bash
+      run: |
+        EXIT_CODE=0
+        if [[ -z "$ENV_NAME" ]]; then
+          echo "Error: environment_name input is required."
+          EXIT_CODE=1
+        fi
+        if [[ -z "$AWS_REGION" ]]; then
+          echo "Error: repository_name environment variable is required."
+          EXIT_CODE=1
+        fi
+        exit $EXIT_CODE
+
+    - name: Define the name of the variables to be retrieved based on the target environment
+      id: aws_env
+      shell: bash
+      env:
+        ACCOUNT: ${{ inputs.account_id }}
+        ROLE_SECRET: ${{ inputs.role_secret }}
+      run: |
+        ROLE_PREFIX="gha-role-for-$(echo "${REPO_NAME}" | cut -c1-26)-${ENV_NAME}-GHARole"
+        echo "arn=arn:aws:iam::${ACCOUNT}:role/${ROLE_PREFIX}-${ROLE_SECRET}" | tee -a $GITHUB_OUTPUT
+
+    - name: AWS CLI Login
+      uses: aws-actions/configure-aws-credentials@d4695650384537945e0b565ee73a714d361bcb04  # v5.5.1
+      with:
+        role-to-assume: ${{ steps.aws_env.outputs.arn }}
+        aws-region: ${{ env.AWS_REGION }}
+        role-duration-seconds: '3600'
+
+    - name: Login to Amazon ECR
+      if: inputs.ecr_login == 'true'
+      id: login_ecr
+      uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2.0.1

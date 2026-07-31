@@ -54,6 +54,7 @@ runs:
         role-to-assume: ${{ steps.aws_env.outputs.arn }}
         aws-region: ${{ env.AWS_REGION }}
         role-duration-seconds: '3600'
+        retry-max-attempts: 3
 
     - name: Login to Amazon ECR
       if: inputs.ecr_login == 'true'

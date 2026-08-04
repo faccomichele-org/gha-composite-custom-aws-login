@@ -9,6 +9,16 @@ inputs:
   ecr_login:
     description: 'Whether to perform ECR login (true/false)'
     default: 'false'
+  aws_access_key_id:
+    description: 'AWS access key ID (optional, used for LocalStack only)'
+    required: false
+  aws_secret_access_key:
+    description: 'AWS secret access key (optional, used for LocalStack only)'
+    required: false
+  sts-endpoint:
+    description: 'Custom STS endpoint (optional, used for LocalStack only)'
+    required: false
+
 
 outputs:
   tfvars:
@@ -55,6 +65,9 @@ runs:
         aws-region: ${{ env.AWS_REGION }}
         role-duration-seconds: '3600'
         retry-max-attempts: 3
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        sts-endpoint: ${{ inputs.sts-endpoint }}
 
     - name: Login to Amazon ECR
       if: inputs.ecr_login == 'true'

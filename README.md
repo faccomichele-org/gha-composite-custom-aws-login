@@ -25,7 +25,7 @@ The following environment variables must be set in the calling workflow:
 | `ecr_login` | Whether to perform ECR login (`true`/`false`) | No | `false` |
 | `aws_access_key_id` | AWS access key ID used to assume the role (e.g. for LocalStack); if empty, OIDC is used | No | — |
 | `aws_secret_access_key` | AWS secret access key used to assume the role (e.g. for LocalStack); if empty, OIDC is used | No | — |
-| `sts-endpoint` | Custom STS endpoint (e.g. for LocalStack) | No | — |
+| `sts_endpoint` | Custom STS endpoint (e.g. for LocalStack) | No | — |
 
 ## Outputs
 
@@ -66,7 +66,7 @@ To use static credentials instead of OIDC (e.g. against LocalStack), provide the
           role_secret: ${{ secrets.AWS_ROLE_SECRET }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          sts-endpoint: http://localhost:4566
+          sts_endpoint: http://localhost:4566
 ```
 
 ## How it works
@@ -77,8 +77,8 @@ To use static credentials instead of OIDC (e.g. against LocalStack), provide the
    arn:aws:iam::<account_id>:role/gha-role-for-<repo_name>-<ENV_NAME>-GHARole-<role_secret>
    ```
    The repository name is truncated to 26 characters when constructing the role name.
-3. **Assumes the IAM role** — uses [`aws-actions/configure-aws-credentials`](https://github.com/aws-actions/configure-aws-credentials) (v5.5.1) with a 1-hour session duration. If `aws_access_key_id` and `aws_secret_access_key` are provided, they are used as the source credentials to assume the role (with `sts-endpoint` applied when set); otherwise, the default OIDC-based flow is used.
-4. **Logs in to Amazon ECR** *(optional)* — when `ecr_login` is `true`, uses [`aws-actions/amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) (v2.0.1) and exposes the registry URL via the `ecr_registry` output.
+3. **Assumes the IAM role** — uses [`aws-actions/configure-aws-credentials`](https://github.com/aws-actions/configure-aws-credentials) with a 1-hour session duration. If `aws_access_key_id` and `aws_secret_access_key` are provided, they are used as the source credentials to assume the role (with `sts-endpoint` applied when set); otherwise, the default OIDC-based flow is used.
+4. **Logs in to Amazon ECR** *(optional)* — when `ecr_login` is `true`, uses [`aws-actions/amazon-ecr-login`](https://github.com/aws-actions/amazon-ecr-login) and exposes the registry URL via the `ecr_registry` output.
 
 ## License
 

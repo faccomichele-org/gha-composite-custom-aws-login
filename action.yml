@@ -15,7 +15,7 @@ inputs:
   aws_secret_access_key:
     description: 'AWS secret access key (optional, used for LocalStack only)'
     required: false
-  sts-endpoint:
+  sts_endpoint:
     description: 'Custom STS endpoint (optional, used for LocalStack only)'
     required: false
 
@@ -67,7 +67,7 @@ runs:
         retry-max-attempts: 3
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        sts-endpoint: ${{ inputs.sts-endpoint }}
+        sts-endpoint: ${{ inputs.sts_endpoint }}
 
     - name: Login to Amazon ECR
       if: inputs.ecr_login == 'true'

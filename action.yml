@@ -68,6 +68,7 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
         sts-endpoint: ${{ inputs.sts_endpoint }}
+        role-session-name: 'gha-run-${{ github.run_id }}'
 
     - name: Login to Amazon ECR
       if: inputs.ecr_login == 'true'

@@ -53,7 +53,7 @@ runs:
           echo "AWS CLI already installed, skipping installation."
         else
           echo "AWS CLI not found, installing..."
-          curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash
+          curl -fsSL https://awscli.amazonaws.com/v2/install.sh | sudo bash -s -- --system
         fi
 
     - name: Define the name of the variables to be retrieved based on the target environment

@@ -15,8 +15,6 @@ inputs:
   aws_secret_access_key:
     description: 'AWS secret access key (optional, used for LocalStack only)'
     required: false
-
-
 outputs:
   tfvars:
     description: 'TF var name for the target environment (exported from the action)'

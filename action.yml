@@ -15,6 +15,9 @@ inputs:
   aws_secret_access_key:
     description: 'AWS secret access key (optional, used for LocalStack only)'
     required: false
+  install_aws_cli:
+    description: 'Whether to install AWS CLI (true/false)'
+    default: 'false'
 outputs:
   tfvars:
     description: 'TF var name for the target environment (exported from the action)'
@@ -45,6 +48,11 @@ runs:
           echo "Warning: aws_endpoint_url environment variable is not set."
         fi
         exit $EXIT_CODE
+
+    - name: Install AWS CLI
+      if: inputs.install_aws_cli == 'true'
+      shell: bash
+      run: curl -fsSL https://awscli.amazonaws.com/v2/install.sh | bash
 
     - name: Define the name of the variables to be retrieved based on the target environment
       id: aws_env

@@ -15,11 +15,6 @@ inputs:
   aws_secret_access_key:
     description: 'AWS secret access key (optional, used for LocalStack only)'
     required: false
-  sts_endpoint:
-    description: 'Custom STS endpoint (optional, used for LocalStack only)'
-    required: false
-
-
 outputs:
   tfvars:
     description: 'TF var name for the target environment (exported from the action)'
@@ -39,12 +34,15 @@ runs:
       run: |
         EXIT_CODE=0
         if [[ -z "$ENV_NAME" ]]; then
-          echo "Error: environment_name input is required."
+          echo "Error: env_name environment variable is required."
           EXIT_CODE=1
         fi
         if [[ -z "$AWS_REGION" ]]; then
-          echo "Error: repository_name environment variable is required."
+          echo "Error: aws_region environment variable is required."
           EXIT_CODE=1
+        fi
+        if [[ -z "$AWS_ENDPOINT_URL" ]]; then
+          echo "Warning: aws_endpoint_url environment variable is not set."
         fi
         exit $EXIT_CODE
 
@@ -67,7 +65,7 @@ runs:
         retry-max-attempts: 3
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        sts-endpoint: ${{ inputs.sts_endpoint }}
+        sts-endpoint: ${{ env.AWS_ENDPOINT_URL }}
         role-session-name: 'gha-run-${{ github.run_id }}'
 
     - name: Login to Amazon ECR
